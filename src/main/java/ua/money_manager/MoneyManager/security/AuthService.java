@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ua.money_manager.MoneyManager.Exceptions.UserAlreadyExistsException;
 import ua.money_manager.MoneyManager.User.User;
 import ua.money_manager.MoneyManager.User.UserRepository;
 import ua.money_manager.MoneyManager.User.UserService;
