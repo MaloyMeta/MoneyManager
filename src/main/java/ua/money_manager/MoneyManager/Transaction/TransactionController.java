@@ -37,9 +37,11 @@ public class TransactionController {
         return transactionService.findLatestByUser(user, limit);
     }
 
-    @PostMapping
+    @PostMapping(value = "/add")
     public Transaction add(@RequestBody Transaction transaction, Principal principal){
+        System.out.println("Principal name: " + principal.getName());
         User user = userService.getUserFromPrincipal(principal);
+        System.out.println("User from principal: " + user);
         transaction.setUser(user);
         return transactionService.save(transaction);
     }
