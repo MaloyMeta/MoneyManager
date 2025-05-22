@@ -24,13 +24,13 @@ public class TransactionController {
         return transactionService.calculateBalance(user);
     }
 
-    @GetMapping
+    @GetMapping(value = "/all")
     public List<Transaction> getAll(Principal principal){
         User user = userService.getUserFromPrincipal(principal);
         return transactionService.findAllByUser(user);
     }
 
-    @GetMapping
+    @GetMapping("/latest")
     public List<Transaction> getLatestTransactions(Principal principal,
                                                    @RequestParam(defaultValue = "5") int limit){
         User user = userService.getUserFromPrincipal(principal);
