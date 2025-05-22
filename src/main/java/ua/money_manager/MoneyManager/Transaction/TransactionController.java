@@ -1,6 +1,7 @@
 package ua.money_manager.MoneyManager.Transaction;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.money_manager.MoneyManager.User.User;
 import ua.money_manager.MoneyManager.User.UserService;
@@ -17,10 +18,23 @@ public class TransactionController {
     private final TransactionService transactionService;
     private final UserService userService;
 
+    @GetMapping(value = "/balance")
+    public BigDecimal getBalance(Principal principal){
+        User user = userService.getUserFromPrincipal(principal);
+        return transactionService.calculateBalance(user);
+    }
+
     @GetMapping
     public List<Transaction> getAll(Principal principal){
         User user = userService.getUserFromPrincipal(principal);
         return transactionService.findAllByUser(user);
+    }
+
+    @GetMapping
+    public List<Transaction> getLatestTransactions(Principal principal,
+                                                   @RequestParam(defaultValue = "5") int limit){
+        User user = userService.getUserFromPrincipal(principal);
+        return transactionService.findLatestByUser(user, limit);
     }
 
     @PostMapping
@@ -28,6 +42,12 @@ public class TransactionController {
         User user = userService.getUserFromPrincipal(principal);
         transaction.setUser(user);
         return transactionService.save(transaction);
+    }
+    @PostMapping(value = "/delete/{id}")
+    public ResponseEntity<Void> delete(@PathVariable int id, Principal principal){
+        User user = userService.getUserFromPrincipal(principal);
+        transactionService.deleteByIdAndUser(id,user);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "/type/{type}")
@@ -43,12 +63,8 @@ public class TransactionController {
             Principal principal
             ){
         User user = userService.getUserFromPrincipal(principal);
-        return transactionService.findByUserAndDateBefore(user, from, to);
+        return transactionService.findByUserAndDateBetween(user, from, to);
     }
 
-    @GetMapping(value = "/balance")
-    public BigDecimal getBalance(Principal principal){
-        User user = userService.getUserFromPrincipal(principal);
-        return transactionService.calculateBalance(user);
-    }
+
 }

@@ -1,6 +1,9 @@
 package ua.money_manager.MoneyManager.Transaction;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ua.money_manager.MoneyManager.User.User;
 
@@ -22,8 +25,22 @@ public class TransactionService {
         return transactionRepository.findByUserAndType(user, type);
     }
 
-    public List<Transaction> findByUserAndDateBefore(User user, LocalDateTime from, LocalDateTime to){
-        return transactionRepository.findByUserAndDateBefore(user, from, to);
+    public List<Transaction> findByUserAndDateBetween(User user, LocalDateTime from, LocalDateTime to){
+        return transactionRepository.findByUserAndDateBetween(user, from, to);
+    }
+
+    public void deleteByIdAndUser(int id, User user){
+        Transaction transaction = transactionRepository.findById((long)id)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+        if(!transaction.getUser().getId().equals(user.getId())){
+            throw new RuntimeException("Unathorized");
+        }
+        transactionRepository.delete(transaction);
+    }
+
+    public List<Transaction> findLatestByUser(User user, int limit){
+        Pageable pageable = PageRequest.of(0, limit, Sort.by("date").descending());
+        return transactionRepository.findByUser(user, pageable);
     }
 
     public BigDecimal calculateBalance(User user) {
