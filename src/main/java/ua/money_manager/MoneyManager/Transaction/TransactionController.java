@@ -39,6 +39,7 @@ public class TransactionController {
 
     @PostMapping(value = "/add")
     public Transaction add(@RequestBody Transaction transaction, Principal principal){
+        System.out.println("Add start");
         System.out.println("Principal name: " + principal.getName());
         User user = userService.getUserFromPrincipal(principal);
         System.out.println("User from principal: " + user);
